@@ -20,6 +20,7 @@ def get_file_path():
 def parse_images_folder():
     global images_files
     images_files = [f for f in selected_folder_path.iterdir() if f.suffix.lower() in [".png", ".jpg", ".jpeg", "heic", "heif"]]
+    images_files = sorted(images_files, key=lambda x: x.stat().st_ctime)
     print(f"Found {len(images_files)} images")
 
     if images_files:
@@ -78,7 +79,7 @@ def empty_trash_images_folder():
         text_box.insert(END, 'Error')
         window.after(2000, lambda: clear_text_box())
 
-def move_image_to_trash(images, index):
+def move_image_to_trash_folder(images, index):
     global current_image_index
     destination = trash_folder_path / images[index].name
     shutil.move(images[index], destination)
@@ -99,6 +100,14 @@ def move_image_to_trash(images, index):
 def clear_text_box():
     text_box.delete('1.0', END)
 
+def previous_image_key(event):
+    show_previous_image(images_files)
+
+def next_image_key(event):
+    show_next_image(images_files)
+
+def delete_image_key(event):
+    move_image_to_trash_folder(images_files, current_image_index)
 #add displaying image to window
 
 # GUI
@@ -120,10 +129,15 @@ next_button.grid(row=3, column=1, padx=5, pady=5)
 previous_button = Button(window, text='Previous Image', command=lambda: show_previous_image(images_files))
 previous_button.grid(row=3, column=0, padx=5, pady=5)
 
-delete_image_button = Button(window, text='Delete Image', command=lambda: move_image_to_trash(images_files, current_image_index))
+delete_image_button = Button(window, text='Delete Image', command=lambda: move_image_to_trash_folder(images_files, current_image_index))
 delete_image_button.grid(row=3, column=2, padx=5, pady=5)
 
 text_box = Text(window, height=2, width=50)
 text_box.grid(row=2, column=1, padx=5, pady=5)
+
+window.bind('<Left>', previous_image_key)
+window.bind('<Right>', next_image_key)
+window.bind('<Delete>', delete_image_key)
+window.bind('<BackSpace>', delete_image_key)
 
 window.mainloop()
