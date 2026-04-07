@@ -6,6 +6,7 @@ import shutil
 
 selected_folder = None
 images_files = []
+undo_stack = []
 current_image_index = 0
 
 def get_file_path():
@@ -82,8 +83,16 @@ def empty_trash_images_folder():
 def move_image_to_trash_folder(images, index):
     global current_image_index
     destination = trash_folder_path / images[index].name
-    shutil.move(images[index], destination)
 
+    action = {
+        'type': 'delete',
+        'image_path': images[index],
+        'image_destination': destination,
+        'index': index
+    }
+    undo_stack.append(action)
+
+    shutil.move(images[index], destination)
     images.pop(index)
 
     if current_image_index >= len(images):
@@ -94,9 +103,22 @@ def move_image_to_trash_folder(images, index):
     else:
         img_label.config(image=' ')
         img_label.image = None
+
         text_box.insert(END, 'No More Images')
         window.after(2000, lambda: clear_text_box())
 
+def undo():
+    if not undo_stack:
+        text_box.insert(END, 'Nothing to undo')
+        window.after(2000, lambda: clear_text_box())
+        return
+    
+    last_action = undo_stack.pop()
+
+    if last_action['type'] == 'delete':
+        images_files.insert(last_action['index'], last_action['image_path'])
+        shutil.move(last_action['destination'], last_action['image_path'])
+        
 def clear_text_box():
     text_box.delete('1.0', END)
 
@@ -108,8 +130,7 @@ def next_image_key(event):
 
 def delete_image_key(event):
     move_image_to_trash_folder(images_files, current_image_index)
-#add displaying image to window
-
+        
 # GUI
 window = Tk()
 window.title('Gallery Cleaner')
@@ -118,7 +139,7 @@ get_user_images_folder_button = Button(text='Select Folder', command=get_file_pa
 get_user_images_folder_button.grid(row=0, column=1, padx=5, pady=5)
 
 empty_trash_images_button = Button(text='Delete Trash Images', command=empty_trash_images_folder)
-empty_trash_images_button.grid(row=5, column=1, padx=5, pady=5)
+empty_trash_images_button.grid(row=0, column=3, padx=5, pady=5)
 
 img_label = Label(window)
 img_label.grid(row=1, column=1, padx=5, pady=5)
@@ -131,6 +152,9 @@ previous_button.grid(row=3, column=0, padx=5, pady=5)
 
 delete_image_button = Button(window, text='Delete Image', command=lambda: move_image_to_trash_folder(images_files, current_image_index))
 delete_image_button.grid(row=3, column=2, padx=5, pady=5)
+
+undo_button = Button(window, text='Undo Last Pic Delete', command=lambda:undo)
+undo_button.grid(row=3, column=4, padx=5, pady=5)
 
 text_box = Text(window, height=2, width=50)
 text_box.grid(row=2, column=1, padx=5, pady=5)
