@@ -60,10 +60,10 @@ def create_trash_folder():
         print(f'Error has occured {e}')
     
 
-def delete_trash_images_folder():
+def empty_trash_images_folder():
     if not any(trash_folder_path.iterdir()):
-        print('Folder is empty')
-        text_box.insert(END, )
+        text_box.insert(END, 'Trash folder has nothing in it')
+        window.after(2000, lambda: clear_text_box())
         return
     try:
         for item in trash_folder_path.iterdir():
@@ -71,8 +71,12 @@ def delete_trash_images_folder():
                 shutil.rmtree(item)
             else:
                 item.unlink()
+        text_box.insert(END, 'Trash folder has been emptied')
+        window.after(2000, lambda: clear_text_box())
     except  Exception as e:
         print (f"could not delete {item}: {e}")
+        text_box.insert(END, 'Error')
+        window.after(2000, lambda: clear_text_box())
 
 def move_image_to_trash(images, index):
     global current_image_index
@@ -89,6 +93,11 @@ def move_image_to_trash(images, index):
     else:
         img_label.config(image=' ')
         img_label.image = None
+        text_box.insert(END, 'No More Images')
+        window.after(2000, lambda: clear_text_box())
+
+def clear_text_box():
+    text_box.delete('1.0', END)
 
 #add displaying image to window
 
@@ -99,8 +108,8 @@ window.title('Gallery Cleaner')
 get_user_images_folder_button = Button(text='Select Folder', command=get_file_path)
 get_user_images_folder_button.grid(row=0, column=1, padx=5, pady=5)
 
-delete_trash_images_button = Button(text='Delete Trash Images', command=delete_trash_images_folder)
-delete_trash_images_button.grid(row=5, column=1, padx=5, pady=5)
+empty_trash_images_button = Button(text='Delete Trash Images', command=empty_trash_images_folder)
+empty_trash_images_button.grid(row=5, column=1, padx=5, pady=5)
 
 img_label = Label(window)
 img_label.grid(row=1, column=1, padx=5, pady=5)
@@ -114,7 +123,7 @@ previous_button.grid(row=3, column=0, padx=5, pady=5)
 delete_image_button = Button(window, text='Delete Image', command=lambda: move_image_to_trash(images_files, current_image_index))
 delete_image_button.grid(row=3, column=2, padx=5, pady=5)
 
-text_box = Text(window, height=10, width=50)
+text_box = Text(window, height=2, width=50)
 text_box.grid(row=2, column=1, padx=5, pady=5)
 
 window.mainloop()
