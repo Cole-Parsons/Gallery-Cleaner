@@ -4,6 +4,9 @@ from PIL import ImageTk, Image
 from pathlib import Path
 import shutil
 
+DISPLAY_HEIGHT = 600
+DISPLAY_WIDTH = 400
+
 selected_folder = None
 images_files = []
 undo_stack = []
@@ -30,6 +33,7 @@ def parse_images_folder():
 def display_image(index):
     image_path = images_files[index]
     img = Image.open(image_path)
+    img.thumbnail((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     img = ImageTk.PhotoImage(img)
     img_label.config(image=img)
     img_label.image = img
@@ -61,7 +65,6 @@ def create_trash_folder():
     except OSError as e:
         print(f'Error has occured {e}')
     
-
 def empty_trash_images_folder():
     if not any(trash_folder_path.iterdir()):
         text_box.insert(END, 'Trash folder has nothing in it')
@@ -92,7 +95,6 @@ def move_image_to_trash_folder(images, index):
     }
     undo_stack.append(action)
 
-    print(undo_stack)
     shutil.move(images[index], destination)
     images.pop(index)
 
@@ -134,6 +136,9 @@ def next_image_key(event):
 
 def delete_image_key(event):
     move_image_to_trash_folder(images_files, current_image_index)
+
+def undo_deletion_key(event):
+    undo()
         
 # GUI
 window = Tk()
@@ -167,5 +172,6 @@ window.bind('<Left>', previous_image_key)
 window.bind('<Right>', next_image_key)
 window.bind('<Delete>', delete_image_key)
 window.bind('<BackSpace>', delete_image_key)
+window.bind('<Shift_L>', undo_deletion_key)
 
 window.mainloop()
