@@ -10,6 +10,15 @@ I've seen apps online for photo cleaning but but who knows what they are doing w
 The goal of this app is to be quick, transparent, and easy to use!  
 
 ## How to Run:  
+
+### From Executable:  
+Mac:  
+* Download and run `Gallery_Cleaner_Mac.app`  
+
+Windows:  
+* Download and run `Gallery_Cleaner_Mac.exe`  
+
+### From Source Code:
 1. clone the repository `git clone https://github.com/Cole-Parsons/Gallery-Cleaner.git`  
 2. cd into the folder `cd Gallery-Cleaner`  
 3. Run the program `python main.py`  
@@ -26,3 +35,6 @@ The goal of this app is to be quick, transparent, and easy to use!
 
 ## Tips of Usage:  
 * If you clicked delete on an image and for some reason can not get it back using the undo function, close the app and access the apps `trash_folder`  
+
+## Additional
+* Soon to add support for windows executable  
