@@ -88,10 +88,11 @@ def move_image_to_trash_folder(images, index):
         'type': 'delete',
         'image_path': images[index],
         'image_destination': destination,
-        'index': index
+        'original_index': current_image_index
     }
     undo_stack.append(action)
 
+    print(undo_stack)
     shutil.move(images[index], destination)
     images.pop(index)
 
@@ -108,6 +109,7 @@ def move_image_to_trash_folder(images, index):
         window.after(2000, lambda: clear_text_box())
 
 def undo():
+    global current_image_index
     if not undo_stack:
         text_box.insert(END, 'Nothing to undo')
         window.after(2000, lambda: clear_text_box())
@@ -116,9 +118,11 @@ def undo():
     last_action = undo_stack.pop()
 
     if last_action['type'] == 'delete':
-        images_files.insert(last_action['index'], last_action['image_path'])
-        shutil.move(last_action['destination'], last_action['image_path'])
-        
+        images_files.insert(last_action['original_index'], last_action['image_path'])
+        shutil.move(last_action['image_destination'], last_action['image_path'])
+        current_image_index = last_action['original_index']
+        display_image(current_image_index)
+
 def clear_text_box():
     text_box.delete('1.0', END)
 
@@ -136,10 +140,10 @@ window = Tk()
 window.title('Gallery Cleaner')
 
 get_user_images_folder_button = Button(text='Select Folder', command=get_file_path)
-get_user_images_folder_button.grid(row=0, column=1, padx=5, pady=5)
+get_user_images_folder_button.grid(row=0, column=0, padx=5, pady=5)
 
 empty_trash_images_button = Button(text='Delete Trash Images', command=empty_trash_images_folder)
-empty_trash_images_button.grid(row=0, column=3, padx=5, pady=5)
+empty_trash_images_button.grid(row=0, column=2, padx=5, pady=5)
 
 img_label = Label(window)
 img_label.grid(row=1, column=1, padx=5, pady=5)
@@ -153,8 +157,8 @@ previous_button.grid(row=3, column=0, padx=5, pady=5)
 delete_image_button = Button(window, text='Delete Image', command=lambda: move_image_to_trash_folder(images_files, current_image_index))
 delete_image_button.grid(row=3, column=2, padx=5, pady=5)
 
-undo_button = Button(window, text='Undo Last Pic Delete', command=lambda:undo)
-undo_button.grid(row=3, column=4, padx=5, pady=5)
+undo_button = Button(window, text='Undo Last Delete', command=lambda:undo())
+undo_button.grid(row=4, column=1, padx=5, pady=5)
 
 text_box = Text(window, height=2, width=50)
 text_box.grid(row=2, column=1, padx=5, pady=5)
