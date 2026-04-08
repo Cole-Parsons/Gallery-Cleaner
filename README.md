@@ -1,5 +1,5 @@
 # Gallery Cleaner App
-Have you ever had the annoying pop up on your phone "Storage Full, Free Space", but the only thing taking up storage on your phone is thousands of pictures?  
+Have you ever had the annoying pop up on your phone "Storage Full, Free Up Space", but the only thing taking up storage on your phone is thousands of pictures?  
 
 Personally I think it takes way too long to press the trash can and press delete for each photo. Not to mention how long it takes for the UI to load between each step.  
 
@@ -7,7 +7,7 @@ Of course there's batch delete but then you have no idea what the pictures are y
 
 I've seen apps online for photo cleaning but but who knows what they are doing with your photos and where they're going!  
 
-The goal of this app is to be quick, transparent, and easy to use.  
+The goal of this app is to be quick, transparent, and easy to use!  
 
 ## How to Run:  
 1. clone the repository `git clone https://github.com/Cole-Parsons/Gallery-Cleaner.git`  
